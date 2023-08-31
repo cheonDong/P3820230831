@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "ChActor.h"
 
 // Sets default values
 AChPawn::AChPawn()
@@ -38,10 +39,10 @@ AChPawn::AChPawn()
 
 	Right = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Right"));
 	Right->SetupAttachment(Body);
-	Left->SetRelativeLocation(FVector(37.0f, 21.0f, 1.0f));
+	Right->SetRelativeLocation(FVector(37.0f, 21.0f, 1.0f));
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Propeller(TEXT("/Script/Engine.StaticMesh'/Game/P38/Meshes/SM_P38_Propeller.SM_P38_Propeller''"));
-	if (SM_Body.Succeeded())
+	if (SM_Propeller.Succeeded())
 	{
 		Left->SetStaticMesh(SM_Propeller.Object);
 		Right->SetStaticMesh(SM_Propeller.Object);
@@ -55,10 +56,24 @@ AChPawn::AChPawn()
 
 	Arrow = CreateDefaultSubobject<UArrowComponent>(TEXT("Arrow"));
 	Arrow->SetupAttachment(RootComponent);
+	Arrow->SetRelativeLocation(FVector(100.0f, 0, 0));
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>(TEXT("Movement"));
 
 	ChActorComponent = CreateDefaultSubobject<UChActorComponent>(TEXT("ChActorComponent"));
+
+	// 블루프린트에 생성한 BPClass를 가져오는 방법.
+	static ConstructorHelpers::FClassFinder<AChActor> RocketClass(TEXT("/Script/Engine.Blueprint'/Game/Blueprint/BP_Rocket.BP_Rocket_C'"));
+
+	if (!RocketClass.Succeeded())
+	{
+		// 가져오는 액터의 래퍼런스 주소의 끝에 _C를 붙여줘야 성공.
+		UE_LOG(LogTemp, Warning, TEXT("Failed"));
+	}
+	else
+	{
+		RocketTemplate = RocketClass.Class;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -66,6 +81,8 @@ void AChPawn::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	ChActorComponent->AddSceneComponent(Right);
+	ChActorComponent->AddSceneComponent(Left);
 }
 
 // Called every frame
@@ -74,6 +91,8 @@ void AChPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AddMovementInput(GetActorForwardVector(), BoostValue);
+
+	
 }
 
 // Called to bind functionality to input
@@ -110,10 +129,23 @@ void AChPawn::EnhancedUnBoost(const FInputActionValue& Value)
 
 void AChPawn::EnhancedFire(const FInputActionValue& Value)
 {
+	if (RocketTemplate != nullptr)
+	{
+		AActor* SpawnActor = GetWorld()->SpawnActor<AActor>(RocketTemplate,
+			Arrow->GetComponentLocation(),
+			Arrow->GetComponentRotation());
+	}
 }
 
 void AChPawn::EnhancedPitchAndRoll(const FInputActionValue& Value)
 {
+	FVector2D VectorValue = Value.Get<FVector2D>();
 
+	if (!VectorValue.IsZero())
+	{
+		AddActorLocalRotation(FRotator(VectorValue.Y * UGameplayStatics::GetWorldDeltaSeconds(GetWorld()) * 60.0f,
+			0,
+			VectorValue.X * UGameplayStatics::GetWorldDeltaSeconds(GetWorld()) * 60.0f));
+	}
 }
 

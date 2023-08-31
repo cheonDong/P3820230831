@@ -13,5 +13,5 @@ UCLASS()
 class P3820230831_API AChGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 };

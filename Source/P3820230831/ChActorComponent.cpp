@@ -29,6 +29,23 @@ void UChActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	/*for (int32 index = 0; index < Components.Num(); ++index)
+	{
+		Components[index]->AddLocalRotation(FRotator(0, 0, 3200.0 * DeltaTime));
+	}*/
+
+	for (auto Propeller : Components)
+	{
+		Propeller->AddLocalRotation(FRotator(0, 0, 3200.0 * DeltaTime));
+	}
 }
+
+void UChActorComponent::AddSceneComponent(USceneComponent* uSceneComponent)
+{
+	if (uSceneComponent)
+	{
+		Components.Add(uSceneComponent);
+	}
+}
+
 

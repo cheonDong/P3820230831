@@ -24,5 +24,10 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	TArray<USceneComponent*> Components;
+
+	UFUNCTION(BlueprintCallable, Category = "Data")
+	void AddSceneComponent(USceneComponent* uSceneComponent);
+
 };
