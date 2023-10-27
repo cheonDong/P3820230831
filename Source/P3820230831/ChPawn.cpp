@@ -13,6 +13,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "ChActor.h"
+#include "ChPlayerController.h"
+#include "ChStatComponent.h"
 
 // Sets default values
 AChPawn::AChPawn()
@@ -147,5 +149,22 @@ void AChPawn::EnhancedPitchAndRoll(const FInputActionValue& Value)
 			0,
 			VectorValue.X * UGameplayStatics::GetWorldDeltaSeconds(GetWorld()) * 60.0f));
 	}
+}
+
+float AChPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
+{
+	AChPlayerController* PC = Cast<AChPlayerController>(this->GetController());
+
+	if (PC)
+	{
+		UChStatComponent* StatManager = Cast<UChStatComponent>(PC->GetComponentByClass<UChStatComponent>());
+
+		if (StatManager)
+		{
+			StatManager->CurHp -= DamageAmount;
+		}
+	}
+
+	return DamageAmount;
 }
 

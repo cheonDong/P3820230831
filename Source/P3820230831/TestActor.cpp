@@ -6,6 +6,9 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "ChActor.h"
+#include "ChPlayerController.h"
+#include "ChStatComponent.h"
+#include "ChPawn.h"
 
 // Sets default values
 ATestActor::ATestActor()
@@ -42,11 +45,14 @@ void ATestActor::Tick(float DeltaTime)
 
 void ATestActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	AChActor* target = Cast<AChActor>(OtherActor);
+	AChPawn* target = Cast<AChPawn>(OtherActor);
 	
 	if ((OtherActor != NULL) && (OtherActor != this) && (OtherComp != NULL) && (OtherActor == target))
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Successed OnHit"));
+
+		UGameplayStatics::ApplyDamage(OtherActor, 20.0f, GetWorld()->GetFirstPlayerController(), nullptr, UDamageType::StaticClass());
+		UE_LOG(LogClass, Warning, TEXT("ApplyDamage"));
 	}
 }
 

@@ -37,7 +37,7 @@ AChActor::AChActor()
 	Movement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Movement"));
 
 	Movement->ProjectileGravityScale = 0;
-	Movement->MaxSpeed = 2000.0f;
+	Movement->MaxSpeed = 3000.0f;
 
 	Particle = CreateDefaultSubobject<UParticleSystem>(TEXT("Particle"));
 
@@ -62,8 +62,6 @@ void AChActor::BeginPlay()
 	Box->SetCollisionProfileName("Box");
 	Box->OnComponentHit.AddDynamic(this, &AChActor::HitMesh);
 	
-	
-
 	// 델리게이트 지우기.
 	// OnActorBeginOverlap.RemoveDynamic(this, &AChActor::ProcessBeginOverlap);
 	// OnActorBeginOverlap.RemoveAll(this);
@@ -110,6 +108,8 @@ void AChActor::HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 	FVector HitLocation = Hit.ImpactPoint;
 	UE_LOG(LogTemp, Warning, TEXT("HitMesh"));
 
+	this->Destroy();
+
 	if (Particle)
 	{
 		UParticleSystemComponent* ParticleComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, HitLocation);
@@ -119,6 +119,8 @@ void AChActor::HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 			ParticleComponent->SetWorldScale3D(FVector(1.0f)); // 크기 설정
 		}
 	}
-}
 
+	UGameplayStatics::ApplyDamage(OtherActor, 20.0f, GetWorld()->GetFirstPlayerController(), nullptr, UDamageType::StaticClass());
+	UE_LOG(LogClass, Warning, TEXT("ApplyDamage"));
+}
 

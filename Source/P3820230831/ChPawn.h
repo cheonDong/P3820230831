@@ -94,4 +94,8 @@ public:
 	// C++에서 블루프린트 class를 가져와서 사용가능
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TSubclassOf<class AChActor> RocketTemplate;
+
+public:
+	UFUNCTION()
+	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 };

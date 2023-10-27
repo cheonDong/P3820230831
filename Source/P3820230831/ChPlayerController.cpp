@@ -5,6 +5,14 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "ChStatComponent.h"
+
+AChPlayerController::AChPlayerController()
+{
+	StatManager = CreateDefaultSubobject<UChStatComponent>(TEXT("StatManager"));
+
+	bAlive = true;
+}
 
 void AChPlayerController::BeginPlay()
 {
