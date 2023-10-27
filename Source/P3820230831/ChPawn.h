@@ -63,6 +63,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	UChActorComponent* ChActorComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	class UParticleSystem* Particle;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float PropellerSpeed = 3600.0f;
 
@@ -87,7 +90,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
 	class UInputAction* IA_PitchAndRoll;
 
-	// 클래스 이름 기억. 클래스 원본의 이름(CDO의 DEfault 객체)을 가리키기 위해 사용. 그래서 포인터가 아님.
+	// 클래스 이름 기억. 클래스 원본의 이름(CDO의 Default 객체)을 가리키기 위해 사용. 그래서 포인터가 아님.
 	// C++에서 블루프린트 class를 가져와서 사용가능
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	TSubclassOf<class AChActor> RocketTemplate;

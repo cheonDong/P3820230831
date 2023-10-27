@@ -5,6 +5,9 @@
 #include "Components/BoxComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -17,6 +20,10 @@ AChActor::AChActor()
 	RootComponent = Box;
 	Box->SetBoxExtent(FVector(20, 20, 20));
 	Box->SetGenerateOverlapEvents(true);
+	Box->SetSimulatePhysics(true);
+	Box->SetNotifyRigidBodyCollision(true);
+	Box->BodyInstance.SetCollisionProfileName("BlockAll");
+	
 
 	Rocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Rocket"));
 	Rocket->SetupAttachment(RootComponent);
@@ -31,6 +38,14 @@ AChActor::AChActor()
 
 	Movement->ProjectileGravityScale = 0;
 	Movement->MaxSpeed = 2000.0f;
+
+	Particle = CreateDefaultSubobject<UParticleSystem>(TEXT("Particle"));
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_A.P_Explosion_Big_A"));
+	if (ParticleAsset.Succeeded())
+	{
+		Particle = ParticleAsset.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +57,12 @@ void AChActor::BeginPlay()
 
 	// 블루프린트의 이벤트 = 델리게이트. 이름을 따라가보면 원형이 있음. 원형에서 인자를 가져와서 필요 함수 생성.
 	// 시작할 때 한번만 등록. 생성자가 아니라 beginplay에서. CDO에 없는 상태이기 때문에.
-	OnActorBeginOverlap.AddDynamic(this, &AChActor::ProcessBeginOverlap);
+	// OnActorBeginOverlap.AddDynamic(this, &AChActor::ProcessBeginOverlap);
+	Rocket->OnComponentHit;
+	Box->SetCollisionProfileName("Box");
+	Box->OnComponentHit.AddDynamic(this, &AChActor::HitMesh);
+	
+	
 
 	// 델리게이트 지우기.
 	// OnActorBeginOverlap.RemoveDynamic(this, &AChActor::ProcessBeginOverlap);
@@ -64,11 +84,41 @@ void AChActor::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 	// CallCPPToBP();
 
 	// 구현된 블루프린트가 없다면 CPP이 가지고있는 함수 실행.
-	CallCPPToBPButCPP();
+	CallCPPToBPButCPP(OtherActor);
+
 }
 
-void AChActor::CallCPPToBPButCPP_Implementation()
+void AChActor::CallCPPToBPButCPP_Implementation(AActor* Target)
 {
 	UE_LOG(LogTemp, Warning, TEXT("CPP Excute"));
+
+	if (Particle && Target)
+	{
+		// Spawn the particle system at the location of the overlapping actor
+		UParticleSystemComponent* ParticleComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, Target->GetActorLocation());
+
+		// Activate the particle system
+		if (ParticleComponent)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("ActivateSystem"));
+		}
+	}
 }
+
+void AChActor::HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	FVector HitLocation = Hit.ImpactPoint;
+	UE_LOG(LogTemp, Warning, TEXT("HitMesh"));
+
+	if (Particle)
+	{
+		UParticleSystemComponent* ParticleComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Particle, HitLocation);
+
+		if (ParticleComponent)
+		{
+			ParticleComponent->SetWorldScale3D(FVector(1.0f)); // 크기 설정
+		}
+	}
+}
+
 

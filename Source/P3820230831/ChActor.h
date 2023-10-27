@@ -39,6 +39,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	UProjectileMovementComponent* Movement;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	class UParticleSystem* Particle;
+
 	// 델리게이트 함수는 항상 UFUNCTION(). 안붙이면 꺼짐
 	UFUNCTION()
 	void ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
@@ -52,6 +55,11 @@ public:
 	// BlueprintNativeEvent = 블루프린트가 없다면 C++ 함수를 호출.
 	// 같은 이름의 _Implementation 함수를 꼭 생성해줘야 함.
 	UFUNCTION(BlueprintNativeEvent)
-	void CallCPPToBPButCPP();
-	void CallCPPToBPButCPP_Implementation();
+	void CallCPPToBPButCPP(AActor* Target);
+	void CallCPPToBPButCPP_Implementation(AActor* Target);
+
+	UFUNCTION()
+	void HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };
+
+
