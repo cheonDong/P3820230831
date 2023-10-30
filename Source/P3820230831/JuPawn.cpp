@@ -31,7 +31,7 @@ AJuPawn::AJuPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Body(TEXT("/Script/Engine.StaticMesh'/Game/P38/Meshes/SM_P38_Body.SM_P38_Body'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Body(TEXT("/Script/Engine.StaticMesh'/Game/Asset/ju-87/ju-87_body.ju-87_body'"));
 	if (SM_Body.Succeeded())
 	{
 		Body->SetStaticMesh(SM_Body.Object);
@@ -41,7 +41,7 @@ AJuPawn::AJuPawn()
 	Propeller->SetupAttachment(Body);
 	Propeller->SetRelativeLocation(FVector(20.0f, -21.0f, 1.0f));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Propeller(TEXT("/Script/Engine.StaticMesh'/Game/P38/Meshes/SM_P38_Propeller.SM_P38_Propeller''"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Propeller(TEXT("/Script/Engine.StaticMesh'/Game/Asset/ju-87/ju-87_elisa.ju-87_elisa'"));
 	if (SM_Propeller.Succeeded())
 	{
 		Propeller->SetStaticMesh(SM_Propeller.Object);
@@ -107,6 +107,11 @@ AJuPawn::AJuPawn()
 		DestroyPawnSystem = DestroyParticleAsset.Object;
 	}
 
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> GameoverAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Explosion/P_Explosion_Big_B.P_Explosion_Big_B'"));
+	if (GameoverAsset.Succeeded())
+	{
+		Gameover = GameoverAsset.Object;
+	}
 }
 
 void AJuPawn::BeginPlay()
@@ -135,6 +140,17 @@ void AJuPawn::Tick(float DeltaTime)
 	NewLocation.Z -= FallSpeed * DeltaTime;
 	SetActorLocation(NewLocation);
 
+	if (this->GetActorLocation().Z <= 1000.0f && bIsCameraStop == false)
+	{
+		FVector NewCameraLocation = FVector(this->GetActorLocation().X, this->GetActorLocation().Y - 1000.0f, this->GetActorLocation().Z + 200.0f);
+		Camera->SetWorldLocation(NewCameraLocation);
+
+		// 시뮬레이션 중에 카메라 회전을 고정하려면 원하는 회전값을 설정
+		FRotator NewCameraRotation = this->GetActorRotation();
+		Camera->SetWorldRotation(NewCameraRotation);
+
+		bIsCameraStop = true;
+	}
 }
 
 // Called to bind functionality to input
@@ -247,17 +263,17 @@ void AJuPawn::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ProcessBeginOverlap"));
 
-	if (DestroyPawn)
+	this->Destroy();
+
+	if (Gameover)
 	{
-		if (DestroyPawnSystem)
+		UParticleSystemComponent* Destroy = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), Gameover, this->GetActorLocation());
+
+		if (Destroy)
 		{
-			DestroyPawn->RegisterComponent();
-			DestroyPawn->SetTemplate(DestroyPawnSystem);
-			DestroyPawn->SetWorldLocation(GetActorLocation()); // 원하는 위치로 설정
+			Destroy->SetWorldScale3D(FVector(3.0f)); // 크기 설정
 		}
 	}
-
-	this->Destroy();
 }
 
 void AJuPawn::FallingPawn()

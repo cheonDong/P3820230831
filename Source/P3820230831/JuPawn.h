@@ -84,6 +84,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
 	class UParticleSystem* DestroyPawnSystem;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	class UParticleSystem* Gameover;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 	float PropellerSpeed = 3600.0f;
 
@@ -92,6 +95,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float FallSpeed = 0.0f;
+
+	bool bIsCameraStop = false;
 
 	void EnhancedBoost(const FInputActionValue& Value);
 

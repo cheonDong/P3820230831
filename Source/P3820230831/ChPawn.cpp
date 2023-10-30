@@ -30,7 +30,7 @@ AChPawn::AChPawn()
 	Body = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Body"));
 	Body->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Body(TEXT("/Script/Engine.StaticMesh'/Game/P38/Meshes/SM_P38_Body.SM_P38_Body'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Body(TEXT("/Script/Engine.StaticMesh'/Game/Asset/P38/Meshes/SM_P38_Body.SM_P38_Body'"));
 	if (SM_Body.Succeeded())
 	{
 		Body->SetStaticMesh(SM_Body.Object);
@@ -44,7 +44,7 @@ AChPawn::AChPawn()
 	Right->SetupAttachment(Body);
 	Right->SetRelativeLocation(FVector(37.0f, 21.0f, 1.0f));
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Propeller(TEXT("/Script/Engine.StaticMesh'/Game/P38/Meshes/SM_P38_Propeller.SM_P38_Propeller''"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Propeller(TEXT("/Script/Engine.StaticMesh'/Game/Asset/P38/Meshes/SM_P38_Propeller.SM_P38_Propeller'"));
 	if (SM_Propeller.Succeeded())
 	{
 		Left->SetStaticMesh(SM_Propeller.Object);
@@ -97,6 +97,8 @@ void AChPawn::BeginPlay()
 	ChActorComponent->AddSceneComponent(Right);
 	ChActorComponent->AddSceneComponent(Left);
 	ChActorComponent->RotationValue = FRotator(0, 0, 3200.0);
+
+	SpawnSmoke();
 }
 
 // Called every frame

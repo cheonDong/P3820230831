@@ -28,7 +28,7 @@ AChActor::AChActor()
 	Rocket = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Rocket"));
 	Rocket->SetupAttachment(RootComponent);
 
-	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Rocket(TEXT("/Script/Engine.StaticMesh'/Game/P38/Meshes/SM_Rocket.SM_Rocket'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> SM_Rocket(TEXT("/Script/Engine.StaticMesh'/Game/Asset/P38/Meshes/SM_Rocket.SM_Rocket'"));
 	if (SM_Rocket.Succeeded())
 	{
 		Rocket->SetStaticMesh(SM_Rocket.Object);
