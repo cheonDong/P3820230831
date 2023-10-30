@@ -90,6 +90,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
 	float BoostValue = 0.5f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	float FallSpeed = 0.0f;
+
 	void EnhancedBoost(const FInputActionValue& Value);
 
 	void EnhancedUnBoost(const FInputActionValue& Value);

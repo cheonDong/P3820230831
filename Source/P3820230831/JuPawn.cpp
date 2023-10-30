@@ -120,6 +120,8 @@ void AJuPawn::BeginPlay()
 
 	OnActorBeginOverlap.AddDynamic(this, &AJuPawn::ProcessBeginOverlap);
 
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AJuPawn::FallingPawn, 5.0f, false);
 }
 
 // Called every frame
@@ -128,6 +130,10 @@ void AJuPawn::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	AddMovementInput(GetActorForwardVector(), BoostValue);
+
+	FVector NewLocation = GetActorLocation();
+	NewLocation.Z -= FallSpeed * DeltaTime;
+	SetActorLocation(NewLocation);
 
 }
 
@@ -241,8 +247,6 @@ void AJuPawn::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("ProcessBeginOverlap"));
 
-	this->Destroy();
-
 	if (DestroyPawn)
 	{
 		if (DestroyPawnSystem)
@@ -252,11 +256,22 @@ void AJuPawn::ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
 			DestroyPawn->SetWorldLocation(GetActorLocation()); // 원하는 위치로 설정
 		}
 	}
+
+	this->Destroy();
 }
 
 void AJuPawn::FallingPawn()
 {
+	if (DestroyPawn)
+	{
+		if (DestroyPawnSystem)
+		{
+			DestroyPawn->RegisterComponent();
+			DestroyPawn->SetTemplate(DestroyPawnSystem);
+			DestroyPawn->SetWorldLocation(GetActorLocation()); // 원하는 위치로 설정
+		}
+	}
 
-	this->SetActorRelativeRotation(FRotator(0.0, -45.0, 0.0));
+	FallSpeed = 300.0f;
 }
 
