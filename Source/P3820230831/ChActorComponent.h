@@ -30,4 +30,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Data")
 	void AddSceneComponent(USceneComponent* uSceneComponent);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	FRotator RotationValue;
+
 };

@@ -36,7 +36,7 @@ void UChActorComponent::TickComponent(float DeltaTime, ELevelTick TickType, FAct
 
 	for (auto Propeller : Components)
 	{
-		Propeller->AddLocalRotation(FRotator(0, 0, 3200.0 * DeltaTime));
+		Propeller->AddLocalRotation(RotationValue * DeltaTime);
 	}
 }
 

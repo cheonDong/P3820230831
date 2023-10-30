@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "InputActionValue.h"
-#include "ChPawn.generated.h"
+#include "JuPawn.generated.h"
 
 class UBoxComponent;
 class UStaticMeshComponent;
@@ -16,13 +16,13 @@ class UFloatingPawnMovement;
 class UChActorComponent;
 
 UCLASS()
-class P3820230831_API AChPawn : public APawn
+class P3820230831_API AJuPawn : public APawn
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this pawn's properties
-	AChPawn();
+	AJuPawn();
 
 protected:
 	// Called when the game starts or when spawned
@@ -40,13 +40,10 @@ public:
 	UBoxComponent* Box;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	UStaticMeshComponent* Body; 
+	UStaticMeshComponent* Body;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	UStaticMeshComponent* Left;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	UStaticMeshComponent* Right;
+	UStaticMeshComponent* Propeller;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
 	USpringArmComponent* SpringArm;
@@ -64,12 +61,30 @@ public:
 	UChActorComponent* ChActorComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
-	class UParticleSystemComponent* Smoke;
+	class UParticleSystemComponent* Smoke_First;
 
 	UPROPERTY(visibleAnywhere, BlueprintReadOnly, Category = "Data")
-	class UParticleSystem* ParticleSystem;
+	class UParticleSystem* SmokeSystem_First;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	class UParticleSystemComponent* Smoke_Second;
+
+	UPROPERTY(visibleAnywhere, BlueprintReadOnly, Category = "Data")
+	class UParticleSystem* SmokeSystem_Second;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	class UParticleSystemComponent* Smoke_Third;
+
+	UPROPERTY(visibleAnywhere, BlueprintReadOnly, Category = "Data")
+	class UParticleSystem* SmokeSystem_Third;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Component")
+	class UParticleSystemComponent* DestroyPawn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Component")
+	class UParticleSystem* DestroyPawnSystem;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Data")
 	float PropellerSpeed = 3600.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Data")
@@ -104,4 +119,10 @@ public:
 
 	UFUNCTION()
 	void SpawnSmoke();
+
+	UFUNCTION()
+	void ProcessBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	UFUNCTION()
+	void FallingPawn();
 };

@@ -7,6 +7,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "ChActorComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -76,6 +77,16 @@ AChPawn::AChPawn()
 	{
 		RocketTemplate = RocketClass.Class;
 	}
+
+	Smoke = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("Smoke"));
+	Smoke->SetupAttachment(RootComponent);
+
+
+	static ConstructorHelpers::FObjectFinder<UParticleSystem> ParticleAsset(TEXT("/Script/Engine.ParticleSystem'/Game/Realistic_Starter_VFX_Pack_Vol2/Particles/Smoke/P_Smoke_C.P_Smoke_C'"));
+	if (ParticleAsset.Succeeded())
+	{
+		ParticleSystem = ParticleAsset.Object;
+	}
 }
 
 // Called when the game starts or when spawned
@@ -85,6 +96,7 @@ void AChPawn::BeginPlay()
 	
 	ChActorComponent->AddSceneComponent(Right);
 	ChActorComponent->AddSceneComponent(Left);
+	ChActorComponent->RotationValue = FRotator(0, 0, 3200.0);
 }
 
 // Called every frame
@@ -161,10 +173,23 @@ float AChPawn::TakeDamage(float DamageAmount, FDamageEvent const& DamageEvent, A
 
 		if (StatManager)
 		{
-			StatManager->CurHp -= DamageAmount;
+			StatManager->UpdateHp(DamageAmount);
 		}
 	}
 
 	return DamageAmount;
+}
+
+void AChPawn::SpawnSmoke()
+{
+	if (Smoke)
+	{
+		if (ParticleSystem)
+		{
+			FVector DesiredLocation = FVector(100, 20, 20); // 원하는 위치를 지정
+			Smoke->SetTemplate(ParticleSystem);
+			Smoke->SetWorldLocation(DesiredLocation); // 원하는 위치로 설정
+		}
+	}
 }
 

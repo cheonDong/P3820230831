@@ -60,7 +60,7 @@ void AChActor::BeginPlay()
 	// OnActorBeginOverlap.AddDynamic(this, &AChActor::ProcessBeginOverlap);
 	Rocket->OnComponentHit;
 	Box->SetCollisionProfileName("Box");
-	Box->OnComponentHit.AddDynamic(this, &AChActor::HitMesh);
+	Box->OnComponentHit.AddDynamic(this, &AChActor::OnHit);
 	
 	// 델리게이트 지우기.
 	// OnActorBeginOverlap.RemoveDynamic(this, &AChActor::ProcessBeginOverlap);
@@ -103,10 +103,10 @@ void AChActor::CallCPPToBPButCPP_Implementation(AActor* Target)
 	}
 }
 
-void AChActor::HitMesh(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AChActor::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
 	FVector HitLocation = Hit.ImpactPoint;
-	UE_LOG(LogTemp, Warning, TEXT("HitMesh"));
+	UE_LOG(LogTemp, Warning, TEXT("OnHit"));
 
 	this->Destroy();
 
